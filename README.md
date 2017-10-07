@@ -2,12 +2,19 @@
 
 We'll build a messaging application together.
 
+
+
 ## Setup
+Assumptions:
+ - you have access to a running Kafka instance (we're using heroku) with 2 topics: `human-messages` and `alerts`
+ - you have access to the .env file for heroku kafka creds
+ - you have python3 and virtualenvwrapper installed
+
 1. git clone this repo
 2. `mkvirtualenv kafka_testing -p python3`
 3. `setvirtualenvproject $VIRTUAL_ENV .`
 4. `pip install -r requirements.txt`
-5. get a copy of the .env file and put it in the root dir for this project
+5. get a copy of the .env file for Kafka creds and put it in the root dir for this project
 6. `echo "source .env" >> $VIRTUAL_ENV/bin/postactivate`
 
 Ready to rock!
@@ -62,14 +69,15 @@ sim.simulate()
 
 Take some time and write your own chatbot.
 
-6.  Dang, there's a lot of noise now.  Let's alert when someone sends too many messages.
+6.  Dang, there's a lot of noise now.  Let's alert when someone sends too many messages.  Let's create an alerting service that consumes messages off of one topic and produces alert messages onto another topic.
+
+Take a second to read the following code, and then answer the question, "Where should I run this code if I want to alert off my own chatbot?"
+**Answer at bottom of README.
 ```
 from alerts import ThrottlingAlertService
 throttlealertservice = ThrottlingAlertService(monitor_topic='human-messages', alert_topic='alerts')
 throttlealertservice.monitor()
 ```
-
-Notice how this consumes messages off of one topic and produces messages onto another topic.
 
 7. Demo other alert service.
 
@@ -77,4 +85,6 @@ Notice how this consumes messages off of one topic and produces messages onto an
 
 9. Recap 
     - notice how individual producers and consumers are very cheap to create and destroy 
-    - the key components of this architecture are the central commit log and the pre-defined schema for a topic.
+    - the key components of this architecture are the central log stream and the pre-defined schema for a topic.
+
+**You need to run that code in another new python process - separate from the one in which the chatbot is producing messages.  Jeez, we're creating a lot of different processes aren't we?  Yes, we are building a little distributed system!

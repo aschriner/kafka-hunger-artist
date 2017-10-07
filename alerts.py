@@ -3,7 +3,7 @@ Alert schema should be:
 {
     "alert_type": "whatever",
     "alert_message": "whatever",
-    "triggered_by": message
+    "triggered_by": message.value // must be json serializable
 }
 """
 import consumer
